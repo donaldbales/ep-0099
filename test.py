@@ -1,31 +1,35 @@
-import os
-import RPi.GPIO as GPIO
 import time
+import smbus
+import sys
 
-GPIO.setmode(GPIO.BCM)
+DEVICE_BUS = 1
+DEVICE_ADDR = 0x10
 
-channel_list = [20,21,26]
-GPIO.setup(channel_list, GPIO.OUT)
+REALY1 = 1
+RELAY2 = 2
+RELAY3 = 3
+RELAY4 = 4
 
-RELAY1 = 21
-RELAY2 = 20
-RELAY3 = 26
+bus = smbus.SMBus(DEVICE_BUS)
 
 try:
     while True:
-        GPIO.output(RELAY1, GPIO.LOW)
+        bus.write_byte_data(DEVICE_ADDR, RELAY1, 0xFF)
         time.sleep(1)
-        GPIO.output(RELAY2, GPIO.LOW)
+        bus.write_byte_data(DEVICE_ADDR, RELAY2, 0xFF)
         time.sleep(1)
-        GPIO.output(RELAY3, GPIO.LOW)
-        time.sleep(1);
-        GPIO.output(RELAY1, GPIO.HIGH)
+        bus.write_byte_data(DEVICE_ADDR, RELAY3, 0xFF)
         time.sleep(1)
-        GPIO.output(RELAY2, GPIO.HIGH)
+        bus.write_byte_data(DEVICE_ADDR, RELAY4, 0xFF)
         time.sleep(1)
-        GPIO.output(RELAY3, GPIO.HIGH)
-        time.sleep(1);
 
-except KeyboardInterrupt:
-    # Clean up the GPIO pins on exit
-    GPIO.cleanup()
+        bus.write_byte_data(DEVICE_ADDR, RELAY1, 0x00)
+        time.sleep(1) 
+        bus.write_byte_data(DEVICE_ADDR, RELAY2, 0x00)
+        time.sleep(1) 
+        bus.write_byte_data(DEVICE_ADDR, RELAY3, 0x00)
+        time.sleep(1) 
+        bus.write_byte_data(DEVICE_ADDR, RELAY4, 0x00)
+        time.sleep(1) 
+except KeyboardInterrupt as e:
+    sys.exit()
